@@ -30,36 +30,16 @@ public class Rides {
         return coordinateX;
     }
 
-    public void setCoordinateX(int coordinateX) {
-        this.coordinateX = coordinateX;
-    }
-
     public int getCoordinateY() {
         return coordinateY;
-    }
-
-    public void setCoordinateY(int coordinateY) {
-        this.coordinateY = coordinateY;
     }
 
     public int getTimeTaken() {
         return timeTaken;
     }
 
-    public void setTimeTaken(int timeTaken) {
-        this.timeTaken = timeTaken;
-    }
-
     public boolean isRiding() {
         return isRiding;
-    }
-
-    public void setRiding(boolean riding) {
-        isRiding = riding;
-    }
-
-    public String getRideId() {
-        return rideId;
     }
 
     public String getDriverId() {

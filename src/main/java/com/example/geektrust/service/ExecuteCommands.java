@@ -1,9 +1,7 @@
 package com.example.geektrust.service;
 
 import com.example.geektrust.Commands;
-import com.example.geektrust.exception.StopRideCommandException;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ExecuteCommands {
