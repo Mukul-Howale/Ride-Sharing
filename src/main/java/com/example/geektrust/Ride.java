@@ -37,18 +37,27 @@ public class Ride {
             matches.put(distance, drivers);
             count++;
         }
-        Map<Integer, List<String>> sortedMatches = sortMatches();
+        sortMatches();
     }
 
-    private static Map<Integer, List<String>> sortMatches(){
-        Map<String, Integer> temp
-                = matches.entrySet()
+    
+
+    private void sortMatches(){
+        Map<Integer, List<String>> sortedMatches = matches.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new));
-        return null;
+
+        for(Map.Entry<Integer, List<String>> mapElements : matches.entrySet()){
+            Integer distance = mapElements.getKey();
+            List<String> driverIds = mapElements.getValue();
+            if(driverIds.size() >= 2){
+                Collections.sort(driverIds);
+            }
+            matches.put(distance, driverIds);
+        }
     }
 }
