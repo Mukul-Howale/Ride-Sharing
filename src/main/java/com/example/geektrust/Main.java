@@ -1,5 +1,7 @@
 package com.example.geektrust;
 
+import com.example.geektrust.service.ExecuteCommands;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,17 +11,12 @@ import java.util.stream.Stream;
 
 public class Main {
 
-    private static ExecuteCommands executeCommands;
-
-    Main(){
-        executeCommands = new ExecuteCommands();
-    }
-
     public static void main(String[] args) {
         try(Stream<String> lines = Files.lines(new File(args[0]).toPath())){
             List<String> getAllLines = lines.map(String::trim)
                     .filter(string -> !string.matches(" "))
                     .collect(Collectors.toList());
+            ExecuteCommands executeCommands = new ExecuteCommands();
             executeCommands.processCommands(getAllLines);
         }
         catch (IOException ioException){
