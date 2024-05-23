@@ -3,6 +3,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import com.example.geektrust.GeneralValues;
+import com.example.geektrust.exception.CalculateBillException;
 import com.example.geektrust.exception.MatchMakingFailedException;
 import com.example.geektrust.exception.StartRideFailedException;
 import com.example.geektrust.exception.StopRideFailedException;
@@ -17,13 +18,11 @@ import java.util.*;
 public class Ride {
     private static Map<String, Driver> drivers;
     private static Map<String, Rider> riders;
-    private static Map<String, List<Match>> allMatches;
     private static Map<String, Rides> rides;
 
     public Ride(){
         drivers = new HashMap<>();
         riders = new HashMap<>();
-        allMatches = new HashMap<>();
         rides = new HashMap<>();
     }
 
@@ -37,24 +36,13 @@ public class Ride {
 
     public void match(String riderID){
         try{
-            int noOfDrivers = drivers.size();
-            int count = 0;
             Rider rider = riders.get(riderID);
-            List<Match> matches = new ArrayList<>();
-            for (Map.Entry<String, Driver> mapElement : drivers.entrySet()) {
-                Driver driver = mapElement.getValue();
-                if(count == noOfDrivers || matches.size() >= GeneralValues.maxDrivers) break;
-                if(driver.isNowRiding()) continue;
-                double distance = roundValue(Math.sqrt(Math.pow((driver.getCoordinateX() - rider.getCoordinateX()), 2) +
-                        Math.pow((driver.getCoordinateY() - rider.getCoordinateY()), 2)));
-                if(distance <= GeneralValues.maxDistance) matches.add(new Match(driver.getDriverId(), distance));
-            }
+            List<Match> matches = getMatches(rider);
             if(matches.isEmpty()) {
                 System.out.println("NO_DRIVERS_AVAILABLE");
             }
             else{
-                matches.sort(Comparator.comparing(Match::getDistance).thenComparing(Match::getDriverId));
-                allMatches.put(riderID, matches);
+                rider.addMatches(matches);
                 StringBuilder matchedDrivers = new StringBuilder();
                 matches.forEach(match -> matchedDrivers.append(match.getDriverId()).append(" "));
                 System.out.println("DRIVERS_MATCHED " + matchedDrivers);
@@ -67,14 +55,13 @@ public class Ride {
 
     public void startRide(String rideId, int nthDriver, String riderId){
         try{
-            List<Match> matches = allMatches.getOrDefault(riderId, null);
-            Rides ride = rides.getOrDefault(rideId, null);
-            if(matches == null || matches.size() < nthDriver || ride != null) {
+            List<Match> matches = riders.get(riderId).getMatches();
+            if(matches.isEmpty() || matches.size() < nthDriver || rides.getOrDefault(rideId, null) != null) {
                 System.out.println("INVALID_RIDE");
             }
             else{
                 Driver driver = drivers.get(matches.get(nthDriver-1).getDriverId());
-                driver.setNowRiding(true);
+                driver.setStartRiding();
                 rides.put(rideId, new Rides(rideId, driver.getDriverId(), riderId));
                 System.out.println("RIDE_STARTED " + rideId);
             }
@@ -91,8 +78,7 @@ public class Ride {
                 System.out.println("INVALID_RIDE");
             }
             else{
-                Driver driver = drivers.get(ride.getDriverId());
-                driver.setNowRiding(false);
+                drivers.get(ride.getDriverId()).setStopRiding();
                 ride.setAfterRideValues(coordinateX,coordinateY,timeTaken);
                 System.out.println("RIDE_STOPPED " + rideId);
             }
@@ -103,25 +89,51 @@ public class Ride {
     }
 
     public void calculateBill(String rideId){
-        Rides ride = rides.getOrDefault(rideId, null);
-        if(ride == null){
-            System.out.println("INVALID_RIDE");
+        try{
+            Rides ride = rides.getOrDefault(rideId, null);
+            if(ride == null){
+                System.out.println("INVALID_RIDE");
+            }
+            else{
+                double finalBill = getFinalBill(riders.get(ride.getRiderId()), ride, rides.get(rideId).getTimeTaken());
+                System.out.println("BILL " + rideId + " " + ride.getDriverId() + " " + new DecimalFormat("#.00").format(finalBill));
+            }
         }
-        else{
-            Rider rider = riders.get(ride.getRiderId());
-            int timeTaken = rides.get(rideId).getTimeTaken();
-            double finalBill = getFinalBill(rider, ride, timeTaken);
-            System.out.println("BILL " + rideId + " " + ride.getDriverId() + " " + new DecimalFormat("#.00").format(finalBill));
+        catch (Exception e){
+            throw new CalculateBillException("Error while calculating bill");
         }
     }
 
+    // Private classes
+
+    private List<Match> getMatches(Rider rider){
+        List<Match> matches = rider.getMatches();
+        for (Map.Entry<String, Driver> mapElement : drivers.entrySet()) {
+            Driver driver = mapElement.getValue();
+            if(matches.size() >= GeneralValues.maxDrivers) break;
+            if(driver.isNowRiding()) continue;
+            double driverToRiderDistance = calculateDriverToRiderDistance(driver, rider);
+            if(driverToRiderDistance <= GeneralValues.maxDistance) matches.add(new Match(driver.getDriverId(), driverToRiderDistance));
+        }
+        return matches;
+    }
+
     private double getFinalBill(Rider rider, Rides ride, int timeTaken) {
-        double riderToDestinationDistance = roundValue(Math.sqrt(Math.pow((rider.getCoordinateX() - ride.getCoordinateX()), 2) +
-                Math.pow((rider.getCoordinateY() - ride.getCoordinateY()), 2)));
-        double billWithoutST = roundValue(GeneralValues.baseFare + (GeneralValues.perKilometer * riderToDestinationDistance)
+        double billWithoutST = roundValue(GeneralValues.baseFare
+                + (GeneralValues.perKilometer * calculateRiderToDestinationDistance(rider, ride))
                 + (GeneralValues.perMinute * timeTaken));
         double serviceTaxAmount = roundValue((billWithoutST * GeneralValues.serviceTax)/100);
         return billWithoutST + serviceTaxAmount;
+    }
+
+    private double calculateDriverToRiderDistance(Driver driver, Rider rider){
+        return roundValue(Math.sqrt(Math.pow((driver.getCoordinateX() - rider.getCoordinateX()), 2) +
+                Math.pow((driver.getCoordinateY() - rider.getCoordinateY()), 2)));
+    }
+
+    private double calculateRiderToDestinationDistance(Rider rider, Rides ride){
+        return roundValue(Math.sqrt(Math.pow((rider.getCoordinateX() - ride.getCoordinateX()), 2) +
+                Math.pow((rider.getCoordinateY() - ride.getCoordinateY()), 2)));
     }
 
     private static double roundValue(double value) {

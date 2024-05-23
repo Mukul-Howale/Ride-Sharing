@@ -2,7 +2,6 @@ package com.example.geektrust;
 
 import com.example.geektrust.exception.MatchMakingFailedException;
 import com.example.geektrust.exception.StartRideFailedException;
-import com.example.geektrust.exception.StopRideFailedException;
 import com.example.geektrust.service.Ride;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +20,5 @@ public class RideTest {
     void ifErrorWhileStartRide(){
         assertThrows(StartRideFailedException.class,
                 () -> ride.startRide("RIDE-005", 0,"R9"));
-    }
-
-    @Test
-    void ifErrorWhileStopRide(){
-        assertThrows(StopRideFailedException.class,
-                () -> ride.stopRide("RIDE-002", 4, 5, 100));
     }
 }

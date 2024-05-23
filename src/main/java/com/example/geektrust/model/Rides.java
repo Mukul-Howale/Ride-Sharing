@@ -49,4 +49,8 @@ public class Rides {
     public String getRiderId() {
         return riderId;
     }
+
+    public String getRideId(){
+        return rideId;
+    }
 }

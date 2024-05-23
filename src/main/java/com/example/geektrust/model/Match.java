@@ -2,7 +2,7 @@ package com.example.geektrust.model;
 
 public class Match {
     private final String driverId;
-    private double distance;
+    private final double distance;
 
     public Match(String driverId, double distance){
         this.driverId = driverId;

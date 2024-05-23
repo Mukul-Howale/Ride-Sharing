@@ -17,8 +17,12 @@ public class Driver {
         return nowRiding;
     }
 
-    public void setNowRiding(boolean nowRiding) {
-        this.nowRiding = nowRiding;
+    public void setStartRiding() {
+        this.nowRiding = true;
+    }
+
+    public void setStopRiding() {
+        this.nowRiding = false;
     }
 
     public String getDriverId() {
