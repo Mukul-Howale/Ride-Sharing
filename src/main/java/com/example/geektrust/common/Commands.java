@@ -1,4 +1,4 @@
-package com.example.geektrust;
+package com.example.geektrust.common;
 
 public enum Commands {
     ADD_DRIVER,

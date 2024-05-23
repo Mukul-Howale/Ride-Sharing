@@ -1,29 +1,31 @@
 package com.example.geektrust.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Rides {
-    private final String rideId;
-    private final String driverId;
-    private final String riderId;
+    private String driverId;
+    private String riderId;
     private int coordinateX;
     private int coordinateY;
     private int timeTaken;
     private boolean isRiding;
+    private final Map<String, Rides> rides = new HashMap<>();
 
-    public Rides(String rideId, String driverId, String riderId){
-        this.rideId = rideId;
+    public void setBeforeRideValues(String driverId, String riderId){
         this.driverId = driverId;
         this.riderId = riderId;
-        coordinateX = 0;
-        coordinateY = 0;
-        timeTaken = 0;
-        isRiding = true;
+        this.coordinateX = 0;
+        this.coordinateY = 0;
+        this.timeTaken = 0;
+        this.isRiding = true;
     }
 
     public void setAfterRideValues(int coordinateX, int coordinateY, int timeTaken){
         this.coordinateX = coordinateX;
         this.coordinateY = coordinateY;
         this.timeTaken = timeTaken;
-        isRiding = false;
+        this.isRiding = false;
     }
 
     public int getCoordinateX() {
@@ -50,7 +52,11 @@ public class Rides {
         return riderId;
     }
 
-    public String getRideId(){
-        return rideId;
+    public void addRide(String rideId, Rides rides){
+        this.rides.put(rideId,rides);
+    }
+
+    public Rides getRide(String rideId){
+        return rides.getOrDefault(rideId, null);
     }
 }

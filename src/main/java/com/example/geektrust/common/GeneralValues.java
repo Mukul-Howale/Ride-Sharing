@@ -1,4 +1,4 @@
-package com.example.geektrust;
+package com.example.geektrust.common;
 
 public class GeneralValues {
     public static final int baseFare = 50;
