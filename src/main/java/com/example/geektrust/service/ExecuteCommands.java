@@ -12,14 +12,12 @@ public class ExecuteCommands {
     private static User user;
     private static MatchMaking matchMaking;
     private static Bill bill;
-    private static Rides rides;
 
     public ExecuteCommands(){
         user = new User();
         matchMaking = new MatchMaking(user);
-        rides = new Rides();
-        riding = new Riding(user, rides);
-        bill = new Bill(user, rides);
+        riding = new Riding(user, new Rides());
+        bill = new Bill(user, new Rides());
     }
 
     public void processCommands(List<String> getAllLines){
@@ -40,31 +38,26 @@ public class ExecuteCommands {
 
     private void executeCommands(String[] command) {
         if (command[0].equals(Commands.ADD_DRIVER.toString())) {
-            String driverID = command[1];
-            int coordinateX = Integer.parseInt(command[2]);
-            int coordinateY = Integer.parseInt(command[3]);
-            user.addDriver(driverID, coordinateX, coordinateY);
+            user.addDriver(command[1],
+                    Integer.parseInt(command[2]),
+                    Integer.parseInt(command[3]));
         } else if (command[0].equals(Commands.ADD_RIDER.toString())) {
-            String riderID = command[1];
-            int coordinateX = Integer.parseInt(command[2]);
-            int coordinateY = Integer.parseInt(command[3]);
-            user.addRider(riderID, coordinateX, coordinateY);
+            user.addRider(command[1],
+                    Integer.parseInt(command[2]),
+                    Integer.parseInt(command[3]));
         } else if (command[0].equals(Commands.MATCH.toString())) {
             matchMaking.match(command[1]);
         } else if (command[0].equals(Commands.START_RIDE.toString())) {
-            String rideId = command[1];
-            int nthDriver = Integer.parseInt(command[2]);
-            String riderId = command[3];
-            riding.startRiding(rideId, nthDriver, riderId);
+            riding.startRiding(command[1],
+                    Integer.parseInt(command[2]),
+                    command[3]);
         } else if (command[0].equals(Commands.STOP_RIDE.toString())) {
-            String rideId = command[1];
-            int coordinateX = Integer.parseInt(command[2]);
-            int coordinateY = Integer.parseInt(command[3]);
-            int timeTaken = Integer.parseInt(command[4]);
-            riding.stopRiding(rideId, coordinateX, coordinateY, timeTaken);
+            riding.stopRiding(command[1],
+                    Integer.parseInt(command[2]),
+                    Integer.parseInt(command[3]),
+                    Integer.parseInt(command[4]));
         } else if (command[0].equals(Commands.BILL.toString())) {
-            String rideId = command[1];
-            bill.calculateBill(rideId);
+            bill.calculateBill(command[1]);
         }
     }
 }

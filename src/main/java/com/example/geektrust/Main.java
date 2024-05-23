@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
-        try(Stream<String> lines = Files.lines(new File(args[0]).toPath())){
+        try(Stream<String> lines = Files.lines(new File("sample_input/input2.txt").toPath())){
             List<String> getAllLines = lines.map(String::trim)
                     .filter(string -> !string.matches(" "))
                     .collect(Collectors.toList());
