@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MatchMaking {
-    User user;
+    private final User user;
 
     public MatchMaking(User user){
         this.user = user;
@@ -23,13 +23,11 @@ public class MatchMaking {
             Rider rider = user.getRider(riderID);
             List<Match> matches = getMatches(rider);
             if(matches.isEmpty()) {
-                System.out.println("NO_DRIVERS_AVAILABLE");
+                System.out.print("NO_DRIVERS_AVAILABLE\n");
             }
             else{
                 rider.addMatches(matches);
-                StringBuilder matchedDrivers = new StringBuilder();
-                matches.forEach(match -> matchedDrivers.append(match.getDriverId()).append(" "));
-                System.out.println("DRIVERS_MATCHED " + matchedDrivers);
+                printDriversMatched(matches);
             }
         }
         catch (Exception e){
@@ -41,17 +39,23 @@ public class MatchMaking {
         List<Match> matches = new ArrayList<>();
         Map<String, Driver> allDrivers = user.getAllDrivers();
         for (Map.Entry<String, Driver> mapElement : allDrivers.entrySet()) {
-            Driver driver = mapElement.getValue();
             if(matches.size() >= GeneralValues.maxDrivers) break;
-            if(driver.isNowRiding()) continue;
+            Driver driver = mapElement.getValue();
             double driverToRiderDistance = calculateDriverToRiderDistance(driver, rider);
-            if(driverToRiderDistance <= GeneralValues.maxDistance) matches.add(new Match(driver.getDriverId(), driverToRiderDistance));
+            if(driverToRiderDistance <= GeneralValues.maxDistance && !driver.isNowRiding())
+                matches.add(new Match(driver.getDriverId(), driverToRiderDistance));
         }
         return matches;
     }
 
     private double calculateDriverToRiderDistance(Driver driver, Rider rider){
-        return RoundValuesGenerator.roundValue(Math.sqrt(Math.pow((driver.getCoordinateX() - rider.getCoordinateX()), 2) +
-                Math.pow((driver.getCoordinateY() - rider.getCoordinateY()), 2)));
+        return RoundValuesGenerator.roundValue(Math.sqrt(Math.pow((driver.getCoordinateX() - rider.getCoordinateX()), GeneralValues.power) +
+                Math.pow((driver.getCoordinateY() - rider.getCoordinateY()), GeneralValues.power)));
+    }
+
+    private void printDriversMatched(List<Match> matches){
+        StringBuilder matchedDrivers = new StringBuilder();
+        matches.forEach(match -> matchedDrivers.append(match.getDriverId()).append(" "));
+        System.out.println("DRIVERS_MATCHED " + matchedDrivers);
     }
 }

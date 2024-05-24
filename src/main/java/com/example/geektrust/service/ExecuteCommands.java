@@ -2,6 +2,7 @@ package com.example.geektrust.service;
 
 import com.example.geektrust.common.Commands;
 import com.example.geektrust.exception.ExecuteCommandsException;
+import com.example.geektrust.model.AllRides;
 import com.example.geektrust.model.Rides;
 
 import java.util.List;
@@ -12,12 +13,14 @@ public class ExecuteCommands {
     private static User user;
     private static MatchMaking matchMaking;
     private static Bill bill;
+    private static AllRides allRides;
 
     public ExecuteCommands(){
         user = new User();
         matchMaking = new MatchMaking(user);
-        riding = new Riding(user, new Rides());
-        bill = new Bill(user, new Rides());
+        allRides = new AllRides();
+        riding = new Riding(user, allRides);
+        bill = new Bill(user, allRides);
     }
 
     public void processCommands(List<String> getAllLines){

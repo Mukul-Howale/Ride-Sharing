@@ -10,9 +10,8 @@ public class Rides {
     private int coordinateY;
     private int timeTaken;
     private boolean isRiding;
-    private final Map<String, Rides> rides = new HashMap<>();
 
-    public void setBeforeRideValues(String driverId, String riderId){
+    public Rides(String driverId, String riderId){
         this.driverId = driverId;
         this.riderId = riderId;
         this.coordinateX = 0;
@@ -50,13 +49,5 @@ public class Rides {
 
     public String getRiderId() {
         return riderId;
-    }
-
-    public void addRide(String rideId, Rides rides){
-        this.rides.put(rideId,rides);
-    }
-
-    public Rides getRide(String rideId){
-        return rides.getOrDefault(rideId, null);
     }
 }

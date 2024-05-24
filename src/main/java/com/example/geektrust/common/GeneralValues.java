@@ -7,4 +7,5 @@ public class GeneralValues {
     public static final int serviceTax = 20;
     public static final int maxDrivers = 5;
     public static final int maxDistance = 5;
+    public static final int power = 2;
 }
