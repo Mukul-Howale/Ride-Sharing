@@ -38,14 +38,22 @@ public class MatchMaking {
     private List<Match> getMatches(Rider rider){
         List<Match> matches = new ArrayList<>();
         Map<String, Driver> allDrivers = user.getAllDrivers();
-        for (Map.Entry<String, Driver> mapElement : allDrivers.entrySet()) {
+        for (Driver driver : allDrivers.values()) {
             if(matches.size() >= GeneralValues.maxDrivers) break;
-            Driver driver = mapElement.getValue();
-            double driverToRiderDistance = calculateDriverToRiderDistance(driver, rider);
-            if(driverToRiderDistance <= GeneralValues.maxDistance && !driver.isNowRiding())
-                matches.add(new Match(driver.getDriverId(), driverToRiderDistance));
+            addDriverIfEligible(matches, driver, rider);
         }
         return matches;
+    }
+
+    private void addDriverIfEligible(List<Match> matches, Driver driver, Rider rider) {
+        double driverToRiderDistance = calculateDriverToRiderDistance(driver, rider);
+        if (isDriverEligible(driver, driverToRiderDistance)) {
+            matches.add(new Match(driver.getDriverId(), driverToRiderDistance));
+        }
+    }
+
+    private boolean isDriverEligible(Driver driver, double distance) {
+        return distance <= GeneralValues.maxDistance && !driver.isNowRiding();
     }
 
     private double calculateDriverToRiderDistance(Driver driver, Rider rider){

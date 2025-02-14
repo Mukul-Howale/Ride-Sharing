@@ -40,27 +40,38 @@ public class ExecuteCommands {
     }
 
     private void executeCommands(String[] command) {
-        if (command[0].equals(Commands.ADD_DRIVER.toString())) {
-            user.addDriver(command[1],
-                    Integer.parseInt(command[2]),
-                    Integer.parseInt(command[3]));
-        } else if (command[0].equals(Commands.ADD_RIDER.toString())) {
-            user.addRider(command[1],
-                    Integer.parseInt(command[2]),
-                    Integer.parseInt(command[3]));
-        } else if (command[0].equals(Commands.MATCH.toString())) {
-            matchMaking.match(command[1]);
-        } else if (command[0].equals(Commands.START_RIDE.toString())) {
-            riding.startRiding(command[1],
-                    Integer.parseInt(command[2]),
-                    command[3]);
-        } else if (command[0].equals(Commands.STOP_RIDE.toString())) {
-            riding.stopRiding(command[1],
-                    Integer.parseInt(command[2]),
-                    Integer.parseInt(command[3]),
-                    Integer.parseInt(command[4]));
-        } else if (command[0].equals(Commands.BILL.toString())) {
-            bill.calculateBill(command[1]);
+        switch (Commands.valueOf(command[0])) {
+            case ADD_DRIVER:
+                user.addDriver(command[1],
+                        Integer.parseInt(command[2]),
+                        Integer.parseInt(command[3]));
+                break;
+            case ADD_RIDER:
+                user.addRider(command[1],
+                        Integer.parseInt(command[2]),
+                        Integer.parseInt(command[3]));
+                break;
+            case MATCH:
+                matchMaking.match(command[1]);
+                break;
+            case START_RIDE:
+                riding.startRiding(command[1],
+                        Integer.parseInt(command[2]),
+                        command[3]);
+                break;
+            case STOP_RIDE:
+                riding.stopRiding(command[1],
+                        Integer.parseInt(command[2]),
+                        Integer.parseInt(command[3]),
+                        Integer.parseInt(command[4]));
+                break;
+            case BILL:
+                bill.calculateBill(command[1]);
+                break;
+            default:
+                // Handle unknown command if necessary
+                System.out.println("Unknown command: " + command[0]);
+                break;
         }
     }
 }
